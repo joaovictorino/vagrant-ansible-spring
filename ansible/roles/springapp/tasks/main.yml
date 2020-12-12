@@ -1,0 +1,25 @@
+---
+  - name: "Instalar java e unzip"
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+      name: "{{ item }}"
+      state: latest
+    become: yes
+    with_items:
+      - "openjdk-11-jre"
+      - "unzip"
+  
+  - name: "Copiar aplicação"
+    copy:
+      src: "files/springapp.zip"
+      dest: "/home/vagrant/springapp.zip"
+    become: yes
+
+  - name: "Desempacotar aplicação"
+    command: "unzip /home/vagrant/springapp.zip -d /srv"
+    become: yes
+
+  - name: "Executar aplicação"
+    command: "nohup java -Dspring.profiles.active=mysql -jar /srv/*.jar &"
+    become: yes

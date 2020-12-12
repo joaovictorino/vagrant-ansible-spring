@@ -1,0 +1,13 @@
+[mysqlserver]
+10.80.4.10
+
+[springapp]
+10.80.4.11
+
+[app:children]
+mysqlserver
+springapp
+
+[app:vars]
+ansible_user=vagrant
+ansible_ssh_private_key=/home/vagrant/id_bionic

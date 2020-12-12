@@ -1,0 +1,34 @@
+---
+  - name: "Instalar mysql"
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+      name: "mysql-server-5.7"
+      state: latest
+    become: yes
+
+  - name: "Configurar MySQL conexão remota"
+    copy:
+      src: "files/mysqld.cnf"
+      dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    become: yes
+    notify:
+      - restart mysql
+
+  - name: "Tentar conectar no banco"
+    command: "mysql -u root petclinic"
+    become: yes
+    register: conexao
+    ignore_erros: true
+
+  - name: "Copiar scripts de banco"
+    copy:
+      src: "files/script"
+      dest: "/home/vagrant/script"
+    become: yes
+    when: conexao is failed
+
+  - name: "Executar scripts de banco"
+    command: "mysql < /home/vagrant/script/user.sql && mysql < /home/vagrant/script/schema.sql && mysql < /home/vagrant/script/data.sql"
+    become: yes
+    when: conexao is failed

@@ -7,14 +7,14 @@
       state: latest
     become: yes
   
-  - name: "Garantir serviço MySQL está rodando"
+  - name: "Garantir serviço MySQL rodando"
     service:
       name: mysql
       state: started
       enabled: True
     become: yes
     
-  - name: "Alterando a senha do root MySQL"
+  - name: "Alterar a senha do root MySQL"
     mysql_user:
       name: root
       host: "{{ item }}"
@@ -27,7 +27,7 @@
     notify:
       - restart mysql
 
-  - name: "Criando arquivo de credenciais do root"
+  - name: "Criar arquivo de credenciais do root"
     template:
       src:  my.cnf.j2
       dest: /root/.my.cnf
@@ -82,12 +82,9 @@
       target: "/home/vagrant/script/data.sql"
 
   - name: "Configurar MySQL para aceitar conexões remotas"
-    mysql_variables:
-      login_user: root
-      login_password: "{{ mysql.root_db_password }}"
-      login_unix_socket: /var/run/mysqld/mysqld.sock
-      variable: bind_address
-      value: "0.0.0.0"
-    mode: persist
+    copy:
+      src: "files/mysqld.cnf"
+      dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    become: yes
     notify:
       - restart mysql

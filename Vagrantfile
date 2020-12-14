@@ -1,6 +1,6 @@
 $copy_private_key_ansible = <<-SCRIPT
   cp /vagrant/id_bionic /home/vagrant && \
-  chmod 600 /home/vagrant/id_bionic && z
+  chmod 600 /home/vagrant/id_bionic && 
   chown vagrant:vagrant /home/vagrant/id_bionic
 SCRIPT
 
@@ -8,12 +8,12 @@ $install_ansible = <<-SCRIPT
   apt-get update && \
   apt-get install -y software-properties-common && \
   apt-add-repository --yes --update ppa:ansible/ansible && \
-  apt-get -y install ansible
+  apt-get -y install python3 ansible
 SCRIPT
 
 $exec_ansible = <<-SCRIPT
   ansible-playbook -i /vagrant/ansible/hosts \
-  /vagrant/ansible/playbook.yml
+  /vagrant/ansible/main.yml
 SCRIPT
 
 $copy_public_key_host = <<-SCRIPT
@@ -38,17 +38,17 @@ Vagrant.configure("2") do |config|
     mysqlserver.vm.provision "shell", inline: $copy_public_key_host
   end
 
-  config.vm.define "springapp" do |springapp|
-    springapp.vm.network "forwarded_port", guest: 8080, host: 8080
-    springapp.vm.network "private_network", ip: "10.80.4.11"
+  config.vm.define "springapp2" do |springapp2|
+    springapp2.vm.network "forwarded_port", guest: 8080, host: 8080
+    springapp2.vm.network "private_network", ip: "10.80.4.14"
 
-    springapp.vm.provider "virtualbox" do |vb|
+    springapp2.vm.provider "virtualbox" do |vb|
       vb.name = "springapp_ansible"
-      vb.memory = 4096
+      vb.memory = 2048
       vb.cpus = 2
     end
 
-    springapp.vm.provision "shell", inline: $copy_public_key_host
+    springapp2.vm.provision "shell", inline: $copy_public_key_host
   end
 
   config.vm.define "ansible" do |ansible|
@@ -60,6 +60,6 @@ Vagrant.configure("2") do |config|
 
     ansible.vm.provision "shell", inline: $copy_private_key_ansible
     ansible.vm.provision "shell", inline: $install_ansible
-    ansible.vm.provision "shell", inline: $exec_ansible
+    ansible.vm.provision "shell", privileged: false, inline: $exec_ansible
   end
 end

@@ -3,12 +3,9 @@
     apt:
       update_cache: yes
       cache_valid_time: 3600
-      name: "{{ item }}"
+      name: ["openjdk-11-jre", "unzip"]
       state: latest
     become: yes
-    with_items:
-      - "openjdk-11-jre"
-      - "unzip"
   
   - name: "Copiar aplicação"
     copy:
@@ -17,9 +14,12 @@
     become: yes
 
   - name: "Desempacotar aplicação"
-    command: "unzip /home/vagrant/springapp.zip -d /srv"
+    unarchive:
+      src: /home/vagrant/springapp.zip
+      dest: /srv
+      remote_src: yes
     become: yes
 
   - name: "Executar aplicação"
-    command: "nohup java -Dspring.profiles.active=mysql -jar /srv/*.jar &"
+    shell: "nohup java -Dspring.profiles.active=mysql -jar /srv/*.jar &"
     become: yes

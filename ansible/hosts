@@ -2,7 +2,7 @@
 10.80.4.10
 
 [springapp]
-10.80.4.11
+10.80.4.14
 
 [app:children]
 mysqlserver
@@ -10,4 +10,6 @@ springapp
 
 [app:vars]
 ansible_user=vagrant
-ansible_ssh_private_key=/home/vagrant/id_bionic
+ansible_ssh_private_key_file=/home/vagrant/id_bionic
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

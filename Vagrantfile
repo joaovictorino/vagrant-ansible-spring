@@ -12,7 +12,7 @@ $install_ansible = <<-SCRIPT
 SCRIPT
 
 $exec_ansible = <<-SCRIPT
-  ansible-galaxy collection install community.mysql,v1.1.1 && \
+  ansible-galaxy collection install 'community.mysql:==1.1.1' && \
   ansible-playbook -i /vagrant/ansible/hosts \
   /vagrant/ansible/main.yml
 SCRIPT

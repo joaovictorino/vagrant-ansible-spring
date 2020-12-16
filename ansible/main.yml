@@ -59,11 +59,23 @@
         state: present
       become: yes
 
+    - name: "Verificar banco"
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: "teste123456"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        login_db: "petclinic"
+        query: "SELECT * FROM vets"
+      register: verificar_banco
+      changed_when: false
+      ignore_errors: true
+
     - name: "Copiar scripts de banco"
       copy:
         src: "files/script"
         dest: "/home/vagrant"
       become: yes
+      when: verificar_banco is failed
 
     - name: "Criar tabelas no banco"
       mysql_db:
@@ -73,6 +85,7 @@
         state: import
         name: "petclinic"
         target: "/home/vagrant/script/schema.sql"
+      when: verificar_banco is failed
 
     - name: "Popular tabelas no banco"
       mysql_db:
@@ -82,6 +95,7 @@
         state: import
         name: "petclinic"
         target: "/home/vagrant/script/data.sql"
+      when: verificar_banco is failed
 
     - name: "Configurar MySQL para aceitar conexões remotas"
       copy:
@@ -120,9 +134,16 @@
         src: /home/vagrant/springapp.zip
         dest: /srv
         remote_src: yes
+        creates: /srv/classes
       become: yes
+
+    - name: "Verificar aplicação"
+      shell: "curl http://localhost:8080"
+      register: curl_app
+      changed_when: false
+      ignore_errors: true
 
     - name: "Executar aplicação"
       shell: "nohup java -Dspring.profiles.active=mysql -jar /srv/*.jar &"
       become: yes
-      run_once: true
+      when: curl_app is failed

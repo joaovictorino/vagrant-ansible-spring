@@ -12,6 +12,7 @@ $install_ansible = <<-SCRIPT
 SCRIPT
 
 $exec_ansible = <<-SCRIPT
+  ansible-galaxy collection install community.mysql && \
   ansible-playbook -i /vagrant/ansible/hosts \
   /vagrant/ansible/main.yml
 SCRIPT
@@ -38,17 +39,17 @@ Vagrant.configure("2") do |config|
     mysqlserver.vm.provision "shell", inline: $copy_public_key_host
   end
 
-  config.vm.define "springapp2" do |springapp2|
-    springapp2.vm.network "forwarded_port", guest: 8080, host: 8080
-    springapp2.vm.network "private_network", ip: "10.80.4.14"
+  config.vm.define "springapp" do |springapp|
+    springapp.vm.network "forwarded_port", guest: 8080, host: 8080
+    springapp.vm.network "private_network", ip: "10.80.4.14"
 
-    springapp2.vm.provider "virtualbox" do |vb|
+    springapp.vm.provider "virtualbox" do |vb|
       vb.name = "springapp_ansible"
       vb.memory = 2048
       vb.cpus = 2
     end
 
-    springapp2.vm.provision "shell", inline: $copy_public_key_host
+    springapp.vm.provision "shell", inline: $copy_public_key_host
   end
 
   config.vm.define "ansible" do |ansible|

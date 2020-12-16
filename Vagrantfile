@@ -8,11 +8,11 @@ $install_ansible = <<-SCRIPT
   apt-get update && \
   apt-get install -y software-properties-common && \
   apt-add-repository --yes --update ppa:ansible/ansible && \
-  apt-get -y install python3 ansible
+  apt-get -y install python3 ansible=2.9.16-1ppa~bionic
 SCRIPT
 
 $exec_ansible = <<-SCRIPT
-  ansible-galaxy collection install community.mysql && \
+  ansible-galaxy collection install community.mysql,v1.1.1 && \
   ansible-playbook -i /vagrant/ansible/hosts \
   /vagrant/ansible/main.yml
 SCRIPT

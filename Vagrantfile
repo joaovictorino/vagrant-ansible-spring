@@ -8,7 +8,7 @@ $install_ansible = <<-SCRIPT
   apt-get update && \
   apt-get install -y software-properties-common && \
   apt-add-repository --yes --update ppa:ansible/ansible && \
-  apt-get -y install python3 ansible=2.9.16-1ppa~bionic
+  apt-get -y install python3 ansible
 SCRIPT
 
 $exec_ansible = <<-SCRIPT

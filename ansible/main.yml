@@ -143,7 +143,26 @@
       changed_when: false
       ignore_errors: true
 
-    - name: "Executar aplicação"
-      shell: "nohup java -Dspring.profiles.active=mysql -jar /srv/*.jar &"
-      become: yes
+    - name: "Criar pasta logs springapp"
+      file:
+        path: /var/log/springapp
+        state: directory
       when: curl_app is failed
+      become: yes
+      
+    - name: "Copiar serviço spring"
+      copy:
+        src: "files/springapp.service"
+        dest: "/etc/systemd/system/springapp.service"
+      when: curl_app is failed
+      become: yes
+
+    - name: "Iniciar serviço"
+      shell: "systemctl start springapp.service"
+      when: curl_app is failed
+      become: yes
+
+    - name: "Habilitar serviço"
+      shell: "systemctl enable springapp.service"
+      when: curl_app is failed
+      become: yes
